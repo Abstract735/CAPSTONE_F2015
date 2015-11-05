@@ -50,6 +50,7 @@ void setup()
   //-----------------------------------------------------------------
   //-----------------------SERIAL SETUP------------------------------
   //-----------------------------------------------------------------
+  Serial.begin(9600);
   s7s.begin(9600); //Start serial peripheral
   s7s2.begin(9600); //Start serial peripheral
   s7s3.begin(9600); //Start serial peripheral
@@ -77,20 +78,20 @@ void loop()
   //-----------------------------------------------------------------
   //-------------------V_BATT DISPLAY ALGORITHM----------------------
   //-----------------------------------------------------------------
-  VALUE_BUFFER = V_BATT * 1000; //Convert V_BATT from float to int data type
-  sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
-  s7s.print(tempString); //Display V_BATT
-  setDecimals1(0b00000001); //Set fixed decimal point
+  //  VALUE_BUFFER = V_BATT * 1000; //Convert V_BATT from float to int data type
+  //  sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
+  //  s7s.print(tempString); //Display V_BATT
+  //  setDecimals1(0b00000001); //Set fixed decimal point
   //-----------------------------------------------------------------
   //-------------------I_BATT DISPLAY ALGORITHM----------------------
   //-----------------------------------------------------------------
-  VALUE_BUFFER = I_BATT; //Convert I_BATT from float to int data type
-  sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
-  s7s2.print(tempString); //Display I_BATT
+  //  VALUE_BUFFER = I_BATT; //Convert I_BATT from float to int data type
+  //  sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
+  //  s7s2.print(tempString); //Display I_BATT
   //-----------------------------------------------------------------
   //-------------------SPEED SAMPLING LOOP---------------------------
   //-----------------------------------------------------------------
-  for (int j = 0; j < SAMPLES; j++) //Speed sampling loop 
+  for (int j = 0; j < SAMPLES; j++) //Speed sampling loop
   {
     PULSE_KNOTS = 2 * pulseIn(SPEED_SENSOR_PIN, HIGH, 50000); //Get signal period
     if (PULSE_KNOTS != 0) //Verify if there was pulse measured
@@ -123,11 +124,25 @@ void loop()
   }
   RPM = RPM / SAMPLES; //Get average frequency
   //-----------------------------------------------------------------
+  //--------------------SOC DISPLAY ALGORITHM----------------------
+  //-----------------------------------------------------------------
+  //VALUE_BUFFER = KNOTS / 4.8; //Convert KNOTS from float to int data type
+  //sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
+  s7s.print("-SOC"); //Display KNOTS
+  //-----------------------------------------------------------------
   //--------------------KNOTS DISPLAY ALGORITHM----------------------
   //-----------------------------------------------------------------
   VALUE_BUFFER = KNOTS / 4.8; //Convert KNOTS from float to int data type
   sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
-  s7s3.print(tempString); //Display KNOTS
+  s7s2.print(tempString); //Display KNOTS
+  //Serial.write(tempString);
+  //-----------------------------------------------------------------
+  //--------------------RPM DISPLAY ALGORITHM----------------------
+  //-----------------------------------------------------------------
+  VALUE_BUFFER = RPM; //Convert KNOTS from float to int data type
+  sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
+  s7s3.print(tempString); //Display RPM
+  Serial.write(tempString);
 }
 void setBrightness(byte value)
 {
