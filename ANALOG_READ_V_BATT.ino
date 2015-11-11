@@ -71,17 +71,10 @@ void loop()
   //-----------------------ANALOG READING----------------------------
   //-----------------------------------------------------------------
   V_BATT = analogRead(VOLTAGE_SENSOR_BATT); //Read ADC0
-  V_BATT = (V_BATT * 5) / 1023; //Adjust reading to get actual value
+  V_BATT = (V_BATT * 50) / 1023; //Adjust reading to get actual value
   V_SENSE_CS = analogRead(CURRENT_SENSOR_BATT); // Read ADC1
   V_SENSE_CS = (V_SENSE_CS * 5) / 1023; //Adjust reading to get actual value
   I_BATT = (V_SENSE_CS - V_REF) * NOM_CURRENT * 1.6; //Adjust V_SENSE_CS to appropiate current reading
-  //-----------------------------------------------------------------
-  //-------------------V_BATT DISPLAY ALGORITHM----------------------
-  //-----------------------------------------------------------------
-  //  VALUE_BUFFER = V_BATT * 1000; //Convert V_BATT from float to int data type
-  //  sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
-  //  s7s.print(tempString); //Display V_BATT
-  //  setDecimals1(0b00000001); //Set fixed decimal point
   //-----------------------------------------------------------------
   //-------------------I_BATT DISPLAY ALGORITHM----------------------
   //-----------------------------------------------------------------
@@ -105,7 +98,6 @@ void loop()
     }
   }
   KNOTS = KNOTS / SAMPLES; //Get average frequency
-
   //-----------------------------------------------------------------
   //---------------------RPM SAMPLING LOOP---------------------------
   //-----------------------------------------------------------------
@@ -135,14 +127,19 @@ void loop()
   VALUE_BUFFER = KNOTS / 4.8; //Convert KNOTS from float to int data type
   sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
   s7s2.print(tempString); //Display KNOTS
-  //Serial.write(tempString);
+  //-----------------------------------------------------------------
+  //-------------------V_BATT DISPLAY ALGORITHM----------------------
+  //-----------------------------------------------------------------
+  VALUE_BUFFER = V_BATT * 100; //Convert V_BATT from float to int data type
+  sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
+  s7s3.print(tempString); //Display V_BATT
+  setDecimals3(0b00000010); //Set fixed decimal point
   //-----------------------------------------------------------------
   //--------------------RPM DISPLAY ALGORITHM----------------------
   //-----------------------------------------------------------------
-  VALUE_BUFFER = RPM; //Convert KNOTS from float to int data type
-  sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
-  s7s3.print(tempString); //Display RPM
-  Serial.write(tempString);
+  //  VALUE_BUFFER = RPM; //Convert RPM from float to int data type
+  //  sprintf(tempString, "%4d", VALUE_BUFFER); //Convert VALUE_BUFFER to char array
+  //  s7s3.print(tempString); //Display RPM
 }
 void setBrightness(byte value)
 {
